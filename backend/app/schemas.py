@@ -1,14 +1,14 @@
 from datetime import date, datetime
 from typing import Optional, List
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 # Auth
 class UserCreate(BaseModel):
-    name: str
+    name: str = Field(..., min_length=1, max_length=255)
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=6, max_length=72, description="Password (6–72 characters)")
 
 
 class UserLogin(BaseModel):

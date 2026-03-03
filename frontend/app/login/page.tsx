@@ -1,10 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { api, setAuthToken, setUserInStorage } from "@/lib/api";
-import { GoogleSignInButton } from "@/components/GoogleSignInButton";
+
+const GoogleSignInButton = dynamic(
+  () => import("@/components/GoogleSignInButton").then((m) => ({ default: m.GoogleSignInButton })).catch(() => ({ default: () => null })),
+  { ssr: false }
+);
 
 export default function LoginPage() {
   const router = useRouter();

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { GoogleProvider } from "@/components/GoogleProvider";
+import { SafeGoogleProvider } from "@/components/SafeGoogleProvider";
 
 export const metadata: Metadata = {
   title: "Winlytics – Data-Driven Career Tracking",
@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <GoogleProvider>{children}</GoogleProvider>
+        <SafeGoogleProvider>{children}</SafeGoogleProvider>
       </body>
     </html>
   );

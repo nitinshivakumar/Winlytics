@@ -2,6 +2,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
 
 from app.database import init_db
 from app.routes import auth, applications
@@ -20,12 +23,44 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
+class OPTIONSPreflightMiddleware(BaseHTTPMiddleware):
+    """Ensure CORS preflight OPTIONS returns 200 with CORS headers only for whitelisted origins."""
+
+    ALLOWED_ORIGINS = {"http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001", "http://127.0.0.1:3001"}
+
+    async def dispatch(self, request: Request, call_next) -> Response:
+        if request.method == "OPTIONS":
+            origin = request.headers.get("origin")
+            if origin not in self.ALLOWED_ORIGINS:
+                return Response(status_code=403, headers={})
+            return Response(
+                status_code=200,
+                headers={
+                    "Access-Control-Allow-Origin": origin,
+                    "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
+                    "Access-Control-Allow-Headers": request.headers.get("access-control-request-headers", "content-type,authorization"),
+                    "Access-Control-Max-Age": "600",
+                    "Access-Control-Allow-Credentials": "true",
+                },
+            )
+        return await call_next(request)
+
+
+app.add_middleware(OPTIONSPreflightMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
+    expose_headers=["*"],
+    max_age=600,
 )
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])

@@ -16,7 +16,12 @@ export async function api<T>(
   };
   if (token) (headers as Record<string, string>)["Authorization"] = `Bearer ${token}`;
 
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  } catch (e) {
+    throw new Error("Cannot reach server. Is the backend running? (e.g. uvicorn on port 8000)");
+  }
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }));
     const msg = Array.isArray(err.detail) ? err.detail.map((e: { msg?: string }) => e.msg || String(e)).join(", ") : err.detail;
