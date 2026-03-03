@@ -6,8 +6,11 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import Response
 
+from app.config import settings as app_settings
 from app.database import init_db
 from app.routes import auth, applications
+
+CORS_ORIGINS = app_settings.cors_origins_list
 
 
 @asynccontextmanager
@@ -27,7 +30,7 @@ app = FastAPI(
 class OPTIONSPreflightMiddleware(BaseHTTPMiddleware):
     """Ensure CORS preflight OPTIONS returns 200 with CORS headers only for whitelisted origins."""
 
-    ALLOWED_ORIGINS = {"http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:3001", "http://127.0.0.1:3001"}
+    ALLOWED_ORIGINS = set(CORS_ORIGINS)
 
     async def dispatch(self, request: Request, call_next) -> Response:
         if request.method == "OPTIONS":
@@ -50,12 +53,7 @@ class OPTIONSPreflightMiddleware(BaseHTTPMiddleware):
 app.add_middleware(OPTIONSPreflightMiddleware)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
-        "http://localhost:3001",
-        "http://127.0.0.1:3001",
-    ],
+    allow_origins=CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],

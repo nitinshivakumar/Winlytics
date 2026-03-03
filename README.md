@@ -54,8 +54,10 @@ App: http://localhost:3000
 - **Backend** `backend/.env`: `SECRET_KEY`, `DATABASE_URL` (e.g. `postgresql+asyncpg://...`)  
 - **Frontend** `frontend/.env.local`: `NEXT_PUBLIC_API_URL=http://127.0.0.1:8000` (default)  
 
-## Hosting (later)
+## Hosting
 
-- Frontend: Vercel (connect GitHub repo)  
-- Backend: Render / Railway  
-- DB: Supabase / Neon  
+See **[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)** for step-by-step instructions to deploy:
+
+- **Frontend** → Vercel (connect GitHub, set root `frontend`, add `NEXT_PUBLIC_API_URL`)
+- **Backend** → Render (root `backend`, set `SECRET_KEY`, `CORS_ORIGINS` to your Vercel URL)
+- Optional: PostgreSQL on Render; Google Sign-In via env vars
