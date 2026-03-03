@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --winly-bg: #0f172a;
+  --winly-accent: #3b82f6;
+  --winly-surface: #1e293b;
+}
+
+body {
+  @apply bg-slate-900 text-slate-100 antialiased;
+}
